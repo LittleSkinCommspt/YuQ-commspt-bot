@@ -121,7 +121,7 @@ public class ManageController {
             return sb.toString();
         }
 
-        @Action("禁言 {qqNo}")
+        @Action("禁言")
         @QMsg(at = true)
         public String ban(long group, @PathVar(1) String paramQQ, @PathVar(2) String timeStr){
             int time;
@@ -145,7 +145,7 @@ public class ManageController {
             return "禁言成功！！";
         }
 
-        @Action("解除禁言 {qqNo}")
+        @Action("解除禁言")
         @QMsg(at = true)
         public String unban(long group, @PathVar(1) String paramQQ){
             if (!paramQQ.matches("^[0-9][0-9]*[0-9]$"))
@@ -155,15 +155,18 @@ public class ManageController {
         }
 
         @Action("commspt-bot {status}")
+        @Synonym({"复读 {status}", "稻草人 {status}"})
         @QMsg(at = true)
         public String onOrOff(GroupEntity groupEntity, boolean status, @PathVar(0) String op){
             switch (op){
                 case "commspt-bot": groupEntity.setStatus(status); break;
+                case "复读": groupEntity.setRepeat(status); break;
+                case "稻草人": groupEntity.setCao(status); break;
                 default: return null;
             }
             groupService.save(groupEntity);
-            if (status) return op + "开启成功";
-            else return op + "关闭成功";
+            if (status) return "\n" + op + "开启成功";
+            else return "\n" + op + "关闭成功";
         }
     }
 

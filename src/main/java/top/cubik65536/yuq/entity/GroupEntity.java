@@ -67,6 +67,7 @@ public class GroupEntity {
     private Boolean locMonitor;
     private Boolean flashNotify;
     private Boolean repeat;
+    private Boolean cao;
     private Boolean voiceIdentify;
     private Boolean groupAdminAuth;
     private Boolean kickWithoutSpeaking;
@@ -85,7 +86,8 @@ public class GroupEntity {
         this.flashNotify = false;
         this.maxCommandCountOnTime = -1;
         this.maxViolationCount = 5;
-        this.repeat = true;
+        this.repeat = false;
+        this.cao = false;
         this.voiceIdentify = false;
         this.groupAdminAuth = false;
         this.kickWithoutSpeaking = false;
