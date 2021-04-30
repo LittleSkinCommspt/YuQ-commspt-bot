@@ -12,6 +12,7 @@ import java.util.Map;
 @SuppressWarnings("UnusedReturnValue")
 @AutoBind
 public interface QQLoginLogic {
+    String allShutUp(QQLoginEntity qqLoginEntity, Long group, Boolean isShutUp) throws IOException;
     List<Map<String, String>> getGroupMsgList(QQLoginEntity qqLoginEntity) throws IOException;
     String operatingGroupMsg(QQLoginEntity qqLoginEntity, String type, Map<String, String> map, String refuseMsg) throws IOException;
 }

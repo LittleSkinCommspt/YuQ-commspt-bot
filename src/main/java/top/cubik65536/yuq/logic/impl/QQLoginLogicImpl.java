@@ -16,6 +16,28 @@ import java.util.*;
 @SuppressWarnings("unused")
 public class QQLoginLogicImpl implements QQLoginLogic {
     @Override
+    public String allShutUp(QQLoginEntity qqLoginEntity, Long group, Boolean isShutUp) throws IOException {
+        long num = 0L;
+        if (isShutUp) num = 4294967295L;
+        Map<String, String> map = new HashMap<>();
+        map.put("src", "qinfo_v3");
+        map.put("gc", group.toString());
+        map.put("bkn", qqLoginEntity.getGtk());
+        map.put("all_shutup", String.valueOf(num));
+        JSONObject jsonObject = OkHttpUtils.postJson("https://qinfo.clt.qq.com/cgi-bin/qun_info/set_group_shutup", map,
+                OkHttpUtils.addCookie(qqLoginEntity.getCookie()));
+        switch (jsonObject.getInteger("ec")){
+            case 0:
+                if (isShutUp) return "全体禁言成功！！";
+                else return "解除全体禁言成功";
+            case 7: return "权限不够，我无法执行！！";
+            case -100005: return "群号不存在";
+            case 4: return "执行失败，请更新QQ！！";
+            default: return "执行失败，" + jsonObject.getString("em");
+        }
+    }
+
+    @Override
     public List<Map<String, String>> getGroupMsgList(QQLoginEntity qqLoginEntity) throws IOException {
         String html = OkHttpUtils.getStr("https://web.qun.qq.com/cgi-bin/sys_msg/getmsg?ver=5761&filter=0&ep=0",
                 OkHttpUtils.addCookie(qqLoginEntity.getCookie()));
