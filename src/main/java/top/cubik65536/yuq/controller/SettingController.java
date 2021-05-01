@@ -12,6 +12,7 @@ import com.icecreamqaq.yuq.controller.BotActionContext;
 import com.icecreamqaq.yuq.controller.QQController;
 import com.icecreamqaq.yuq.entity.Group;
 import com.icecreamqaq.yuq.message.Message;
+import top.cubik65536.yuq.entity.ConfigEntity;
 import top.cubik65536.yuq.entity.GroupEntity;
 import top.cubik65536.yuq.entity.QQLoginEntity;
 import top.cubik65536.yuq.logic.*;
@@ -81,6 +82,18 @@ public class SettingController extends QQController {
         } else return "机器人并没有加入这个群！！";
     }
 
+    @Action("设通知 {groupNo}")
+    public String notificationGroup(long groupNo) {
+        Map<Long, Group> groups = FunKt.getYuq().getGroups();
+        if (groups.containsKey(groupNo)) {
+            ConfigEntity configEntity = configService.findByType("notificationGroup");
+            if (configEntity == null) configEntity = new ConfigEntity("notificationGroup");
+            configEntity.setContent(groupNo + "");
+            configService.save(configEntity);
+            return "已将通知群设定为" + groupNo + "！";
+        } else return "机器人并没有加入这个群！！";
+    }
+
     @Action("加超管 {groupNum} {qqNum}")
     @Synonym({"删超管 {groupNum} {qqNum}"})
     public String addSuperAdmin(long groupNum, Long qqNum, @PathVar(0) String str){
@@ -97,7 +110,7 @@ public class SettingController extends QQController {
             }else return null;
             groupService.save(groupEntity);
             return String.format("添加{%s}群的{%s}为超管成功！！", groupNum, qqNum);
-        }else return "机器人并没有加入这个群！！";
+        } else return "机器人并没有加入这个群！！";
     }
 
 }

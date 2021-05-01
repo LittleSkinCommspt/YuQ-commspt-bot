@@ -194,22 +194,11 @@ public class ManageController {
         }
 
         @Action("加违规词 {content}")
-        @Synonym({"加黑名单 {content}", "加白名单 {content}", "加拦截 {content}",
-                "加微博监控 {content}", "加哔哩哔哩监控 {content}"})
         @QMsg(at = true)
         public String add(GroupEntity groupEntity, @PathVar(0) String type, String content, ContextSession session, long qq) throws IOException {
             switch (type){
                 case "加违规词":
                     groupEntity.setViolationJsonArray(groupEntity.getViolationJsonArray().fluentAdd(content));
-                    break;
-                case "加黑名单":
-                    groupEntity.setBlackJsonArray(groupEntity.getBlackJsonArray().fluentAdd(content));
-                    break;
-                case "加白名单":
-                    groupEntity.setWhiteJsonArray(groupEntity.getWhiteJsonArray().fluentAdd(content));
-                    break;
-                case "加拦截":
-                    groupEntity.setInterceptJsonArray(groupEntity.getInterceptJsonArray().fluentAdd(content));
                     break;
                 default: return null;
             }
@@ -218,8 +207,6 @@ public class ManageController {
         }
 
         @Action("删违规词 {content}")
-        @Synonym({"删黑名单 {content}", "删白名单 {content}", "删拦截 {content}",
-                "删微博监控 {content}", "删哔哩哔哩监控 {content}"})
         @QMsg(at = true)
         public String del(GroupEntity groupEntity, @PathVar(0) String type, String content){
             switch (type){
@@ -227,31 +214,6 @@ public class ManageController {
                     JSONArray violationJsonArray = groupEntity.getViolationJsonArray();
                     BotUtils.delManager(violationJsonArray, content);
                     groupEntity.setViolationJsonArray(violationJsonArray);
-                    break;
-                case "删黑名单":
-                    JSONArray blackJsonArray = groupEntity.getBlackJsonArray();
-                    BotUtils.delManager(blackJsonArray, content);
-                    groupEntity.setBlackJsonArray(blackJsonArray);
-                    break;
-                case "删白名单":
-                    JSONArray whiteJsonArray = groupEntity.getWhiteJsonArray();
-                    BotUtils.delManager(whiteJsonArray, content);
-                    groupEntity.setWhiteJsonArray(whiteJsonArray);
-                    break;
-                case "删拦截":
-                    JSONArray interceptJsonArray = groupEntity.getInterceptJsonArray();
-                    BotUtils.delManager(interceptJsonArray, content);
-                    groupEntity.setInterceptJsonArray(interceptJsonArray);
-                    break;
-                case "删微博监控":
-                    JSONArray weiboJsonArray = groupEntity.getWeiboJsonArray();
-                    BotUtils.delMonitorList(weiboJsonArray, content);
-                    groupEntity.setWeiboJsonArray(weiboJsonArray);
-                    break;
-                case "删哔哩哔哩监控":
-                    JSONArray biliBiliJsonArray = groupEntity.getBiliBiliJsonArray();
-                    BotUtils.delMonitorList(biliBiliJsonArray, content);
-                    groupEntity.setBiliBiliJsonArray(biliBiliJsonArray);
                     break;
                 default: return null;
             }
