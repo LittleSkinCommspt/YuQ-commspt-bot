@@ -111,7 +111,7 @@ public class ManageController {
             if (groupEntity.isAdmin(qq.getId()) || groupEntity.isSuperAdmin(qq.getId())
                     || qq.getId() == Long.parseLong(master) || (qq.isAdmin() && Boolean.valueOf(true).equals(groupEntity.getGroupAdminAuth()))){
                 return groupEntity;
-            }else throw FunKt.getMif().at(qq).plus("您的权限不足，无法执行！！").toThrowable();
+            } else throw FunKt.getMif().at(qq).plus("您的权限不足，无法执行！！").toThrowable();
         }
 
         @Action("清屏")
@@ -152,6 +152,46 @@ public class ManageController {
                 return "您输入的不为qq号，请重试！！";
             FunKt.getYuq().getGroups().get(group).get(Long.parseLong(paramQQ)).unBan();
             return "解除禁言成功！！";
+        }
+
+        @Action("&mute")
+        @QMsg(at = true)
+        public String mute(long group, @PathVar(1) String status, @PathVar(2) String paramQQ, @PathVar(3) String timeStr){
+            switch(status){
+                case "add":
+                    return ban(group, paramQQ, timeStr);
+                case "remove":
+                    return unban(group, paramQQ);
+                default: return null;
+            }
+        }
+
+        @Action("&ban")
+        @QMsg(at = true)
+        public String disable(long group, @PathVar(1) String status, @PathVar(2) String paramQQ){
+            if (!paramQQ.matches("^[0-9][0-9]*[0-9]$")) {
+                return "您输入的不为qq号，请重试！！";
+            }
+            GroupEntity groupEntity = groupService.findByGroup(group);
+            switch(status) {
+                case "add":
+                    if (groupEntity.isAdmin(Long.parseLong(paramQQ)) || groupEntity.isSuperAdmin(Long.parseLong(paramQQ))
+                            || Long.parseLong(paramQQ) == Long.parseLong(master)) {
+                        return "此人无法被ban";
+                    }
+                    JSONArray banJsonArray = groupEntity.getBanJsonArray();
+                    banJsonArray.add(paramQQ);
+                    groupEntity.setBanJsonArray(banJsonArray);
+                    groupService.save(groupEntity);
+                    return "此人已被禁止使用此机器人！";
+                case "remove":
+                    JSONArray jsonArray = groupEntity.getBanJsonArray();
+                    jsonArray.remove(paramQQ);
+                    groupEntity.setBanJsonArray(jsonArray);
+                    groupService.save(groupEntity);
+                    return "此人已被允许使用此机器人！";
+                default: return null;
+            }
         }
 
         @Action("commspt-bot {status}")
@@ -240,23 +280,6 @@ public class ManageController {
             }
         }
 
-        @Action("违规次数 {count}")
-        @QMsg(at = true)
-        public String maxViolationCount(GroupEntity groupEntity, int count){
-            groupEntity.setMaxViolationCount(count);
-            groupService.save(groupEntity);
-            return "已设置本群最大违规次数为" + count + "次";
-        }
-
-        @Action("清除违规 {qqNum}")
-        public String clear(GroupEntity groupEntity, long qq){
-            QQEntity qqEntity = qqService.findByQQAndGroup(qq, groupEntity.getGroup());
-            if (qqEntity == null) qqEntity = new QQEntity(qq, groupEntity);
-            qqEntity.setViolationCount(0);
-            qqService.save(qqEntity);
-            return "清除违规成功！！";
-        }
-
         @Action("指令限制 {count}")
         @QMsg(at = true)
         public String maxCommandCount(GroupEntity groupEntity, int count){
@@ -341,7 +364,7 @@ public class ManageController {
         }
 
         @Action("查管")
-        @Synonym({"查黑名单", "查白名单", "查违规词", "查拦截", "查微博监控", "查哔哩哔哩监控", "查问答", "查超管", "查指令限制", "查shell"})
+        @Synonym({"查黑名单", "查白名单", "查违规词", "查问答", "查超管", "查指令限制"})
         @QMsg(at = true, atNewLine = true)
         public String query(GroupEntity groupEntity, @PathVar(0) String type){
             StringBuilder sb = new StringBuilder();
@@ -358,17 +381,9 @@ public class ManageController {
                     sb.append("本群黑名单列表如下：").append("\n");
                     groupEntity.getBlackJsonArray().forEach(obj -> sb.append(obj).append("\n"));
                     break;
-                case "查白名单":
-                    sb.append("本群白名单列表如下：").append("\n");
-                    groupEntity.getWhiteJsonArray().forEach(obj -> sb.append(obj).append("\n"));
-                    break;
                 case "查违规词":
                     sb.append("本群违规词列表如下：").append("\n");
                     groupEntity.getViolationJsonArray().forEach(obj -> sb.append(obj).append("\n"));
-                    break;
-                case "查拦截":
-                    sb.append("本群被拦截的指令列表如下：").append("\n");
-                    groupEntity.getInterceptJsonArray().forEach(obj -> sb.append(obj).append("\n"));
                     break;
                 case "查问答":
                     sb.append("本群问答列表如下：").append("\n");
@@ -381,15 +396,6 @@ public class ManageController {
                     sb.append("本群的指令限制列表如下：").append("\n");
                     groupEntity.getCommandLimitJsonObject().forEach((k, v) ->
                             sb.append(k).append("->").append(v).append("次").append("\n"));
-                    break;
-                case "查shell":
-                    sb.append("本群的shell命令存储如下").append("\n");
-                    groupEntity.getShellCommandJsonArray().forEach(obj -> {
-                        JSONObject shellCommandJsonObject = (JSONObject) obj;
-                        sb.append(shellCommandJsonObject.getInteger("auth")).append("->")
-                                .append(shellCommandJsonObject.getString("command")).append("->")
-                                .append(shellCommandJsonObject.getString("shell"));
-                    });
                     break;
                 default: return null;
             }

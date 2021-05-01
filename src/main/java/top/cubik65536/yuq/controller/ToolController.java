@@ -26,8 +26,8 @@ public class ToolController {
     public GroupEntity before(long group, long qq){
         GroupEntity groupEntity = groupService.findByGroup(group);
         if (groupEntity == null) groupEntity = new GroupEntity();
-        if (String.valueOf(qq).equals(master)) return groupEntity;
-        else throw FunKt.getMif().at(qq).plus("抱歉，您的权限不足，无法执行！！").toThrowable();
+        if (groupEntity.getBanJsonArray().contains(String.valueOf(qq))) FunKt.getMif().text(null).toMessage().toThrowable();
+        return groupEntity;
     }
 
     @Action("&ping")

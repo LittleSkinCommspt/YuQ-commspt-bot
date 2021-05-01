@@ -22,6 +22,9 @@ public class GroupEntity {
     private Long group;
     @Lob
     @Column(columnDefinition="text")
+    private String banList;
+    @Lob
+    @Column(columnDefinition="text")
     private String blackList;
     @Lob
     @Column(columnDefinition="text")
@@ -94,6 +97,15 @@ public class GroupEntity {
         this.colorPicType = "quickly";
     }
 
+    public JSONArray getBanJsonArray(){
+        if (banList == null) return new JSONArray();
+        else return JSON.parseArray(banList);
+    }
+
+    public void setBanJsonArray(JSONArray jsonArray){
+        this.banList = jsonArray.toString();
+    }
+
     public JSONArray getBlackJsonArray(){
         if (blackList == null) return new JSONArray();
         else return JSON.parseArray(blackList);
@@ -101,15 +113,6 @@ public class GroupEntity {
 
     public void setBlackJsonArray(JSONArray jsonArray){
         this.blackList = jsonArray.toString();
-    }
-
-    public JSONArray getWhiteJsonArray(){
-        if (whiteList == null) return new JSONArray();
-        else return JSON.parseArray(whiteList);
-    }
-
-    public void setWhiteJsonArray(JSONArray jsonArray){
-        this.whiteList = jsonArray.toString();
     }
 
     public JSONArray getViolationJsonArray(){
@@ -144,28 +147,6 @@ public class GroupEntity {
         else return JSON.parseArray(weiboList);
     }
 
-    public void setWeiboJsonArray(JSONArray jsonArray){
-        this.weiboList = jsonArray.toString();
-    }
-
-    public JSONArray getBiliBiliJsonArray(){
-        if (biliBiliList == null) return new JSONArray();
-        else return JSON.parseArray(biliBiliList);
-    }
-
-    public void setBiliBiliJsonArray(JSONArray jsonArray){
-        this.biliBiliList = jsonArray.toString();
-    }
-
-    public JSONArray getInterceptJsonArray(){
-        if (interceptList == null) return new JSONArray();
-        else return JSON.parseArray(interceptList);
-    }
-
-    public void setInterceptJsonArray(JSONArray jsonArray){
-        this.interceptList = jsonArray.toString();
-    }
-
     public void setSuperAdminJsonArray(JSONArray jsonArray){
         this.superAdminList = jsonArray.toString();
     }
@@ -182,15 +163,6 @@ public class GroupEntity {
 
     public void setCommandLimitJsonObject(JSONObject jsonObject){
         this.commandLimitList = jsonObject.toString();
-    }
-
-    public JSONArray getShellCommandJsonArray(){
-        if (shellCommandList == null) return new JSONArray();
-        else return JSON.parseArray(shellCommandList);
-    }
-
-    public void setShellCommandJsonArray(JSONArray jsonArray){
-        this.shellCommandList = jsonArray.toString();
     }
 
     public boolean isSuperAdmin(long qq){

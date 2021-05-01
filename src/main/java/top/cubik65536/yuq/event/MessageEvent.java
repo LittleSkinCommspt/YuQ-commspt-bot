@@ -90,6 +90,7 @@ public class MessageEvent {
         Boolean repeat;
         if (groupEntity == null) repeat = false;
         else repeat = groupEntity.getRepeat();
+        if (groupEntity.getBanJsonArray().contains(String.valueOf(e.getSender().getId()))) return;
         if (repeat == null) {
             repeat = false;
             groupEntity.setRepeat(false);
@@ -118,23 +119,13 @@ public class MessageEvent {
     public void inter(GroupMessageEvent e) throws IOException {
         GroupEntity groupEntity = groupService.findByGroup(e.getGroup().getId());
         if (groupEntity == null) return;
-        if (groupEntity.getWhiteJsonArray().contains(String.valueOf(e.getSender().getId()))) return;
+        if (groupEntity.getBanJsonArray().contains(String.valueOf(e.getSender().getId()))) return;
         Message message = e.getMessage();
         String str;
         try {
             str = message.toPath().get(0);
         }catch (IllegalStateException ex){
             str = null;
-        }
-        if (str != null){
-            JSONArray interceptJsonArray = groupEntity.getInterceptJsonArray();
-            for (int i = 0; i < interceptJsonArray.size(); i++){
-                String intercept = interceptJsonArray.getString(i);
-                if (str.contains(intercept)){
-                    e.cancel = true;
-                    break;
-                }
-            }
         }
         if (!e.getGroup().getBot().isAdmin()) return;
         QQEntity qqEntity = qqService.findByQQAndGroup(e.getSender().getId(), e.getGroup().getId());
@@ -178,6 +169,7 @@ public class MessageEvent {
     public void qa(GroupMessageEvent e){
         GroupEntity groupEntity = groupService.findByGroup(e.getGroup().getId());
         if (groupEntity == null) return;
+        if (groupEntity.getBanJsonArray().contains(String.valueOf(e.getSender().getId()))) return;
         Message message = e.getMessage();
         if (message.toPath().size() == 0) return;
         String messageStr = message.toPath().get(0);
