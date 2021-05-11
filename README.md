@@ -1,14 +1,10 @@
+**短时间内暂不再进行维护，请查看[`LittleSkinCommspt/commspt-bot`](https://github.com/LittleSkinCommspt/commspt-bot)**
+
 # YuQ-commspt-bot
 
 **基于 [`YuQ-Mirai框架`](https://github.com/YuQWorks/YuQ-Mirai) 的 [`LittleSkinCommspt/commspt-bot`](https://github.com/LittleSkinCommspt/commspt-bot) 重写版本**
 
 此机器人由 [@Cubik65536](https://github.com/Cubik65536) 开发&维护
-
-------
-
-## 📑文档
-
-文档正在撰写
 
 ------
 
